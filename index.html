@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Chunk Master - Practice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f0f4f8; scroll-behavior: smooth; }
+        .hidden-element { display: none; }
+        .custom-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        @keyframes pulse-red {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .recording-active { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; }
+        .correct-text { color: #10b981; }
+        .wrong-text { color: #ef4444; text-decoration: line-through; }
+    </style>
+</head>
+<body class="min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 px-4 text-center mb-8 custom-shadow">
+        <h1 class="text-3xl font-bold">English Chunk Master</h1>
+        <p class="text-indigo-100 mt-1">Domine o Inglês Real</p>
+        <div class="mt-4 flex justify-center items-center gap-4">
+            <button onclick="prevLevel()" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm transition">« Voltar</button>
+            <div class="bg-white/20 px-4 py-1 rounded-full text-sm font-semibold">
+                Chunk <span id="progress-text">1</span> / <span id="total-text">20</span>
+            </div>
+            <button onclick="nextLevel()" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm transition">Próximo »</button>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4">
+        
+        <div id="game-container" class="bg-white rounded-2xl p-6 md:p-8 custom-shadow border border-gray-100">
+            
+            <!-- 1. Situação -->
+            <section id="step-1" class="mb-8">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-2">1. Situação (Português)</h2>
+                <div id="situacao-box" class="bg-indigo-50 p-4 rounded-xl text-gray-800 leading-relaxed italic border-l-4 border-indigo-400"></div>
+            </section>
+
+            <!-- 2. Input + Check -->
+            <section id="step-2" class="mb-8">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-2">2. Como você diria isso?</h2>
+                <div class="flex flex-col gap-3">
+                    <input type="text" id="user-input" autocomplete="off" placeholder="Tente adivinhar o chunk..." 
+                        class="w-full border-2 border-gray-200 rounded-xl p-4 text-lg focus:outline-none focus:border-indigo-500 transition-colors">
+                    <button onclick="checkFirstAnswer()" id="check-btn" class="bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">
+                        Verificar Resposta
+                    </button>
+                </div>
+                <div id="input-feedback" class="mt-3 font-medium text-center hidden"></div>
+            </section>
+
+            <!-- Reveal Section -->
+            <div id="extended-content" class="hidden-element space-y-10 border-t pt-8 mt-8 border-dashed border-gray-200">
+                
+                <!-- 4. Erros -->
+                <section id="step-4">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-red-500 mb-2">4. Erros Comuns de Brasileiros</h2>
+                    <div id="erros-box" class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl text-gray-700"></div>
+                </section>
+
+                <!-- 5. Expressão + IPA + Playback -->
+                <section id="step-5">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-2">5. Expressão e Pronúncia</h2>
+                    <div class="bg-slate-900 rounded-2xl p-6 text-white relative">
+                        <p class="text-sm text-indigo-300 font-mono mb-1">A expressão correta é:</p>
+                        <p id="real-expression" class="text-2xl font-bold text-yellow-400 mb-3"></p>
+                        <div class="flex items-center gap-3">
+                            <span id="ipa-text" class="text-gray-300 italic text-sm"></span>
+                            <button onclick="speakCurrentChunk()" class="bg-white/10 hover:bg-white/20 p-2 rounded-full transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. Rewrite -->
+                <section id="step-6">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-2">6. Fixação: Reescreva Corretamente</h2>
+                    <input type="text" id="rewrite-input" oninput="validateRewrite()" placeholder="Digite para fixar..." 
+                        class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl p-4 text-lg focus:outline-none transition-colors">
+                </section>
+
+                <!-- 7. Gravação com Feedback Real -->
+                <section id="step-7" class="hidden-element">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-2">7. Feedback Real: Fale o Chunk</h2>
+                    <div class="flex flex-col items-center justify-center p-6 bg-indigo-50 rounded-2xl border-2 border-indigo-100">
+                        <button id="mic-btn" onclick="toggleRecording()" class="w-20 h-20 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                        </button>
+                        <p id="voice-status" class="mt-4 font-semibold text-indigo-800">Clique no microfone para gravar</p>
+                        
+                        <!-- Feedback Real de Comparação -->
+                        <div id="voice-feedback-box" class="mt-4 w-full bg-white p-4 rounded-xl border border-indigo-200 hidden">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-2 text-center">Análise de Pronúncia</p>
+                            <div id="comparison-result" class="text-lg text-center font-medium leading-relaxed"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-8">
+                        <button onclick="prevLevel()" class="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition">Anterior</button>
+                        <button onclick="nextLevel()" class="flex-[2] bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600 transition">Próximo Chunk »</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const chunks = [
+            { situacao: "O tempo ou orçamento está apertado.", correct: "It is tight", erros: "Brasileiros dizem 'It's short'. Use 'Tight' para dinheiro ou prazos.", ipa: "it iz táit", keywords: ["tight"] },
+            { situacao: "Você teve um dia com muito trabalho e correria.", correct: "Busy day", erros: "Evite 'Day busy'. Adjetivo vem antes.", ipa: "bí-zi dei", keywords: ["busy day"] },
+            { situacao: "Algo custa muito dinheiro.", correct: "It is very expensive", erros: "Não diga 'Very much expensive'. Apenas 'Very expensive'.", ipa: "it iz véri éks-pên-siv", keywords: ["expensive"] },
+            { situacao: "Você quer dizer o projeto que está fazendo agora.", correct: "I’m currently working on", erros: "Não use 'Actually'. Use 'Currently' para 'atualmente'.", ipa: "áim cã-rent-li uôr-kin on", keywords: ["working on"] },
+            { situacao: "Dizer em qual empresa você trabalha.", correct: "I work at Google", erros: "Brasileiros usam 'work in'. Use 'Work AT' para empresas.", ipa: "ai uôrk ét gu-gou", keywords: ["work at"] },
+            { situacao: "Forma educada de dizer 'Eu quero'.", correct: "I’d like to", erros: "Dizer 'I want' soa rude. 'I'd like to' é essencial.", ipa: "áid láik tu", keywords: ["like to"] },
+            { situacao: "Pedindo comida em um restaurante.", correct: "I will have", erros: "Brasileiros dizem 'I want a pizza'. Use 'I will have'.", ipa: "ai uíl rév", keywords: ["will have"] },
+            { situacao: "Pegar algo rápido (comida/bebida).", correct: "I will grab a", erros: "Não use apenas 'Take'. 'Grab' soa muito mais natural.", ipa: "ai uíl gréb ei", keywords: ["grab a"] },
+            { situacao: "Desejar boa sorte em algo difícil.", correct: "Best of luck", erros: "'Good luck' é comum, 'Best of luck' é mais elegante.", ipa: "bést óv lãk", keywords: ["best of luck"] },
+            { situacao: "Estar extremamente ocupado (atolado).", correct: "I’m swamped", erros: "Não diga 'I'm very busy'. 'Swamped' é 'soterrado' de trabalho.", ipa: "áim suómpt", keywords: ["swamped"] },
+            { situacao: "Algo está totalmente entendido.", correct: "Crystal clear", erros: "Em vez de 'I understood', use 'Crystal clear'.", ipa: "crís-tou clíar", keywords: ["crystal clear"] },
+            { situacao: "Você precisa de tempo para refletir.", correct: "I’ll think it over", erros: "Não diga apenas 'I will think'. 'Think it over' é o correto.", ipa: "áil tink it ôu-vêr", keywords: ["think it over"] },
+            { situacao: "Pedir desculpas pelo atraso.", correct: "Sorry for my lateness", erros: "Não use 'delay' para pessoas. 'Lateness' é o chunk.", ipa: "só-ri fór mái leit-nés", keywords: ["lateness"] },
+            { situacao: "Usar sua experiência para ajudar a empresa.", correct: "I’m looking to leverage my experience", erros: "Use 'leverage' (alavancar) em vez de 'use'.", ipa: "áim lú-kin tu lé-ve-redj mái éks-pí-ri-êns", keywords: ["leverage"] },
+            { situacao: "Pedir para falar em particular com alguém.", correct: "Can I have a word with you?", erros: "Não diga 'Can I talk?'. 'Have a word' é para conversas rápidas.", ipa: "kén ai rév á uôrd uídj iú", keywords: ["word with you"] },
+            { situacao: "Concordar com alguém.", correct: "You are right", erros: "Não diga 'You have reason'. O correto é 'You are right'.", ipa: "iú ár ráit", keywords: ["you are right"] },
+            { situacao: "Mostrar dúvida educadamente.", correct: "I’m not sure about that", erros: "Evite 'I don't know'. 'I'm not sure' é mais polido.", ipa: "áim nót xúr á-báut dét", keywords: ["not sure"] },
+            { situacao: "Se desculpar por um erro.", correct: "Sorry about that", erros: "Use o 'About that' para soar natural.", ipa: "só-ri á-báut dét", keywords: ["sorry about that"] },
+            { situacao: "Discordar de uma opinião.", correct: "I don’t think so", erros: "Não diga 'I think no'. O correto é 'I don't think so'.", ipa: "ai dônt tink sôu", keywords: ["don't think so"] },
+            { situacao: "Marcar uma reunião no trabalho.", correct: "Schedule a meeting", erros: "Não use 'mark a meeting'. Use 'Schedule'.", ipa: "ské-djul á mí-tin", keywords: ["schedule"] }
+        ];
+
+        let currentIdx = 0;
+        let recognition;
+
+        function init() {
+            document.getElementById('total-text').innerText = chunks.length;
+            loadChunk();
+            setupSpeechRecognition();
+        }
+
+        function loadChunk() {
+            const chunk = chunks[currentIdx];
+            document.getElementById('progress-text').innerText = currentIdx + 1;
+            document.getElementById('situacao-box').innerText = chunk.situacao;
+            document.getElementById('real-expression').innerText = chunk.correct;
+            document.getElementById('erros-box').innerText = chunk.erros;
+            document.getElementById('ipa-text').innerText = "Simplified IPA: / " + chunk.ipa + " /";
+            
+            // Reset UI elements
+            document.getElementById('extended-content').classList.add('hidden-element');
+            document.getElementById('input-feedback').classList.add('hidden');
+            document.getElementById('user-input').value = "";
+            document.getElementById('user-input').disabled = false;
+            document.getElementById('user-input').classList.remove('border-green-500', 'border-red-500');
+            document.getElementById('rewrite-input').value = "";
+            document.getElementById('rewrite-input').classList.remove('border-green-500');
+            document.getElementById('step-7').classList.add('hidden-element');
+            document.getElementById('voice-feedback-box').classList.add('hidden');
+            document.getElementById('check-btn').classList.remove('hidden-element');
+            document.getElementById('voice-status').innerText = "Clique no microfone para gravar";
+        }
+
+        function checkFirstAnswer() {
+            const val = document.getElementById('user-input').value.toLowerCase().trim();
+            const chunk = chunks[currentIdx];
+            const feedback = document.getElementById('input-feedback');
+            
+            feedback.classList.remove('hidden');
+            const isCorrect = chunk.keywords.some(k => val.includes(k.toLowerCase()));
+
+            if (isCorrect) {
+                feedback.innerHTML = "✨ Ótimo chute! Você está no caminho certo.";
+                feedback.className = "mt-3 font-medium text-center text-green-600";
+                document.getElementById('user-input').classList.add('border-green-500');
+            } else {
+                feedback.innerHTML = "💡 Quase! Veja a expressão nativa exata abaixo:";
+                feedback.className = "mt-3 font-medium text-center text-orange-500";
+            }
+
+            document.getElementById('extended-content').classList.remove('hidden-element');
+            document.getElementById('check-btn').classList.add('hidden-element');
+            document.getElementById('user-input').disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('extended-content').scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        function speakCurrentChunk() {
+            const msg = new SpeechSynthesisUtterance(chunks[currentIdx].correct);
+            msg.lang = 'en-US';
+            msg.rate = 0.8;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function validateRewrite() {
+            const val = document.getElementById('rewrite-input').value.trim().toLowerCase();
+            const target = chunks[currentIdx].correct.toLowerCase();
+            
+            if (val === target) {
+                document.getElementById('rewrite-input').classList.add('border-green-500');
+                document.getElementById('step-7').classList.remove('hidden-element');
+                setTimeout(() => {
+                    document.getElementById('step-7').scrollIntoView({ behavior: 'smooth' });
+                }, 200);
+            }
+        }
+
+        function setupSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                document.getElementById('mic-btn').classList.add('recording-active');
+                document.getElementById('voice-status').innerText = "Gravando...";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase().replace(/[.,?!]/g, "");
+                const target = chunks[currentIdx].correct.toLowerCase().replace(/[.,?!]/g, "");
+                
+                showVoiceFeedback(transcript, target);
+            };
+
+            recognition.onerror = () => {
+                document.getElementById('voice-status').innerText = "Erro ao ouvir. Tente novamente.";
+                document.getElementById('mic-btn').classList.remove('recording-active');
+            };
+
+            recognition.onend = () => {
+                document.getElementById('mic-btn').classList.remove('recording-active');
+            };
+        }
+
+        function showVoiceFeedback(transcript, target) {
+            const box = document.getElementById('voice-feedback-box');
+            const resultDiv = document.getElementById('comparison-result');
+            box.classList.remove('hidden');
+
+            const targetWords = target.split(' ');
+            const spokenWords = transcript.split(' ');
+
+            let html = "";
+            targetWords.forEach((word, i) => {
+                if (spokenWords.includes(word)) {
+                    html += `<span class="correct-text">${word}</span> `;
+                } else {
+                    html += `<span class="wrong-text">${word}</span> `;
+                }
+            });
+
+            resultDiv.innerHTML = html;
+
+            if (transcript.includes(target) || target.includes(transcript)) {
+                document.getElementById('voice-status').innerText = "Excelente pronúncia! 🎉";
+                document.getElementById('voice-status').className = "mt-4 font-bold text-green-600 text-center";
+            } else {
+                document.getElementById('voice-status').innerText = "Tente falar mais pausadamente.";
+                document.getElementById('voice-status').className = "mt-4 font-bold text-red-500 text-center";
+            }
+        }
+
+        function toggleRecording() {
+            if (recognition) {
+                try { recognition.start(); } catch(e) {}
+            }
+        }
+
+        function nextLevel() {
+            if (currentIdx < chunks.length - 1) {
+                currentIdx++;
+                loadChunk();
+            } else {
+                alert("Parabéns! Você finalizou todos os chunks!");
+            }
+        }
+
+        function prevLevel() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                loadChunk();
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
